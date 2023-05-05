@@ -64,10 +64,12 @@ class _GooglePlaceAutoCompleteTextFieldState
     return CompositedTransformTarget(
       link: _layerLink,
       child: TextFormField(
+        autocorrect: false,
         controller: widget.textEditingController,
         decoration: widget.inputDecoration,
         style: widget.textStyle,
         focusNode: widget.focusNode,
+        onTap: widget.onTap,
         onChanged: (text) {
           subject.add(text);
           if (widget.onChanged != null) widget.onChanged!(text);
