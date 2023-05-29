@@ -70,23 +70,26 @@ class _MyHomePageState extends State<MyHomePage> {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 20),
       child: GooglePlaceAutoCompleteTextField(
-          textEditingController: controller,
-          googleAPIKey: "YOUR_GOOGLE_API_KEY",
-          inputDecoration: InputDecoration(hintText: "Search your location"),
-          debounceTime: 800,
-          countries: ["in", "fr"],
-          isLatLngRequired: true,
-          getPlaceDetailWithLatLng: (Prediction prediction) {
-            print("placeDetails" + prediction.lng.toString());
-          },
-          onItemTap: (Prediction prediction) {
-            controller.text = prediction.description;
+        textEditingController: controller,
+        googleAPIKey: "YOUR_GOOGLE_API_KEY",
+        inputDecoration: InputDecoration(hintText: "Search your location"),
+        debounceTime: 800,
+        countries: ["in", "fr"],
+        isLatLngRequired: true,
+        getPlaceDetailWithLatLng: (Prediction prediction) {
+          print("placeDetails" + prediction.lng.toString());
+        },
+        onItemTap: (Prediction prediction) {
+          controller.text = prediction.description;
 
-            controller.selection = TextSelection.fromPosition(
-                TextPosition(offset: prediction.description.length));
-          }
-          // default 600 ms ,
-          ),
+          controller.selection = TextSelection.fromPosition(
+              TextPosition(offset: prediction.description.length));
+        },
+        builder: (dynamic Function() removeOverlay, Widget child) {
+          return child;
+        },
+        // default 600 ms ,
+      ),
     );
   }
 }

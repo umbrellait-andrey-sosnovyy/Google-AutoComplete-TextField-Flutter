@@ -6,10 +6,16 @@ import 'package:google_places_flutter/model/place_details.dart';
 import 'package:google_places_flutter/model/prediction.dart';
 import 'package:rxdart/rxdart.dart';
 
+typedef GoogleMapTextFieldBuilder = Widget Function(
+  VoidCallback removeOverlay,
+  Widget child,
+);
+
 class GooglePlaceAutoCompleteTextField extends StatefulWidget {
   GooglePlaceAutoCompleteTextField({
     required this.textEditingController,
     required this.googleAPIKey,
+    required this.builder,
     this.debounceTime = 800,
     this.inputDecoration = const InputDecoration(),
     this.onItemTap,
@@ -34,6 +40,7 @@ class GooglePlaceAutoCompleteTextField extends StatefulWidget {
   final FocusNode? focusNode;
   final VoidCallback? onTap;
   final Function(String text)? onChanged;
+  final GoogleMapTextFieldBuilder builder;
 
   @override
   _GooglePlaceAutoCompleteTextFieldState createState() =>
@@ -61,19 +68,22 @@ class _GooglePlaceAutoCompleteTextFieldState
 
   @override
   Widget build(BuildContext context) {
-    return CompositedTransformTarget(
-      link: _layerLink,
-      child: TextFormField(
-        autocorrect: false,
-        controller: widget.textEditingController,
-        decoration: widget.inputDecoration,
-        style: widget.textStyle,
-        focusNode: widget.focusNode,
-        onTap: widget.onTap,
-        onChanged: (text) {
-          subject.add(text);
-          if (widget.onChanged != null) widget.onChanged!(text);
-        },
+    return widget.builder(
+      () => removeOverlay(),
+      CompositedTransformTarget(
+        link: _layerLink,
+        child: TextFormField(
+          autocorrect: false,
+          controller: widget.textEditingController,
+          decoration: widget.inputDecoration,
+          style: widget.textStyle,
+          focusNode: widget.focusNode,
+          onTap: widget.onTap,
+          onChanged: (text) {
+            subject.add(text);
+            if (widget.onChanged != null) widget.onChanged!(text);
+          },
+        ),
       ),
     );
   }
@@ -126,41 +136,43 @@ class _GooglePlaceAutoCompleteTextFieldState
       var size = renderBox.size;
       var offset = renderBox.localToGlobal(Offset.zero);
       return OverlayEntry(
-          builder: (context) => Positioned(
-                left: offset.dx,
-                top: size.height + offset.dy,
-                width: size.width,
-                child: CompositedTransformFollower(
-                  showWhenUnlinked: false,
-                  link: this._layerLink,
-                  offset: Offset(0.0, size.height + 5.0),
-                  child: Material(
-                      elevation: 1.0,
-                      child: ListView.builder(
-                        padding: EdgeInsets.zero,
-                        shrinkWrap: true,
-                        itemCount: alPredictions.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          return InkWell(
-                            onTap: () {
-                              if (index < alPredictions.length) {
-                                widget.onItemTap!(alPredictions[index]);
-                                if (!widget.isLatLngRequired) return;
+        builder: (context) {
+          return Positioned(
+            left: offset.dx,
+            top: size.height + offset.dy,
+            width: size.width,
+            child: CompositedTransformFollower(
+              showWhenUnlinked: false,
+              link: this._layerLink,
+              offset: Offset(0.0, size.height + 5.0),
+              child: Material(
+                  elevation: 1.0,
+                  child: ListView.builder(
+                    padding: EdgeInsets.zero,
+                    shrinkWrap: true,
+                    itemCount: alPredictions.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return InkWell(
+                        onTap: () {
+                          if (index < alPredictions.length) {
+                            widget.onItemTap!(alPredictions[index]);
+                            if (!widget.isLatLngRequired) return;
 
-                                getPlaceDetailsFromPlaceId(
-                                    alPredictions[index]);
+                            getPlaceDetailsFromPlaceId(alPredictions[index]);
 
-                                removeOverlay();
-                              }
-                            },
-                            child: Container(
-                                padding: EdgeInsets.all(10),
-                                child: Text(alPredictions[index].description!)),
-                          );
+                            removeOverlay();
+                          }
                         },
-                      )),
-                ),
-              ));
+                        child: Container(
+                            padding: EdgeInsets.all(10),
+                            child: Text(alPredictions[index].description!)),
+                      );
+                    },
+                  )),
+            ),
+          );
+        },
+      );
     }
     return null;
   }
