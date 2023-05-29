@@ -70,8 +70,9 @@ class _GooglePlaceAutoCompleteTextFieldState
   Widget build(BuildContext context) {
     return widget.builder(
       () {
+        removeOverlay();
         _overlayEntry?.remove();
-        _overlayEntry = null;
+        _overlayEntry?.dispose();
       },
       CompositedTransformTarget(
         link: _layerLink,
