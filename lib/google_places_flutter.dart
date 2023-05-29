@@ -6,16 +6,10 @@ import 'package:google_places_flutter/model/place_details.dart';
 import 'package:google_places_flutter/model/prediction.dart';
 import 'package:rxdart/rxdart.dart';
 
-typedef GoogleMapTextFieldBuilder = Widget Function(
-  VoidCallback removeOverlayEntry,
-  Widget child,
-);
-
 class GooglePlaceAutoCompleteTextField extends StatefulWidget {
   GooglePlaceAutoCompleteTextField({
     required this.textEditingController,
     required this.googleAPIKey,
-    required this.builder,
     this.debounceTime = 800,
     this.inputDecoration = const InputDecoration(),
     this.onItemTap,
@@ -40,14 +34,13 @@ class GooglePlaceAutoCompleteTextField extends StatefulWidget {
   final FocusNode? focusNode;
   final VoidCallback? onTap;
   final Function(String text)? onChanged;
-  final GoogleMapTextFieldBuilder builder;
 
   @override
-  _GooglePlaceAutoCompleteTextFieldState createState() =>
-      _GooglePlaceAutoCompleteTextFieldState();
+  GooglePlaceAutoCompleteTextFieldState createState() =>
+      GooglePlaceAutoCompleteTextFieldState();
 }
 
-class _GooglePlaceAutoCompleteTextFieldState
+class GooglePlaceAutoCompleteTextFieldState
     extends State<GooglePlaceAutoCompleteTextField> {
   final subject = new PublishSubject<String>();
   OverlayEntry? _overlayEntry;
@@ -68,26 +61,19 @@ class _GooglePlaceAutoCompleteTextFieldState
 
   @override
   Widget build(BuildContext context) {
-    return widget.builder(
-      () {
-        removeOverlay();
-        _overlayEntry?.remove();
-        _overlayEntry?.dispose();
-      },
-      CompositedTransformTarget(
-        link: _layerLink,
-        child: TextFormField(
-          autocorrect: false,
-          controller: widget.textEditingController,
-          decoration: widget.inputDecoration,
-          style: widget.textStyle,
-          focusNode: widget.focusNode,
-          onTap: widget.onTap,
-          onChanged: (text) {
-            subject.add(text);
-            if (widget.onChanged != null) widget.onChanged!(text);
-          },
-        ),
+    return CompositedTransformTarget(
+      link: _layerLink,
+      child: TextFormField(
+        autocorrect: false,
+        controller: widget.textEditingController,
+        decoration: widget.inputDecoration,
+        style: widget.textStyle,
+        focusNode: widget.focusNode,
+        onTap: widget.onTap,
+        onChanged: (text) {
+          subject.add(text);
+          if (widget.onChanged != null) widget.onChanged!(text);
+        },
       ),
     );
   }

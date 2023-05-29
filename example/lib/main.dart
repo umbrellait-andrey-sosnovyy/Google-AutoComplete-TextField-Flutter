@@ -85,10 +85,6 @@ class _MyHomePageState extends State<MyHomePage> {
           controller.selection = TextSelection.fromPosition(
               TextPosition(offset: prediction.description.length));
         },
-        builder: (dynamic Function() removeOverlay, Widget child) {
-          return child;
-        },
-        // default 600 ms ,
       ),
     );
   }
