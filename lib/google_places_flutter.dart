@@ -7,7 +7,7 @@ import 'package:google_places_flutter/model/prediction.dart';
 import 'package:rxdart/rxdart.dart';
 
 class GooglePlaceAutoCompleteTextField extends StatefulWidget {
-  GooglePlaceAutoCompleteTextField({
+  const GooglePlaceAutoCompleteTextField({
     required this.textEditingController,
     required this.googleAPIKey,
     this.debounceTime = 800,
@@ -20,6 +20,7 @@ class GooglePlaceAutoCompleteTextField extends StatefulWidget {
     this.focusNode,
     this.onTap,
     this.onChanged,
+    Key? key,
   });
 
   final TextEditingController textEditingController;
