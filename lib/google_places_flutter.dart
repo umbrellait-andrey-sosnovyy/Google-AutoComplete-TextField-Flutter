@@ -21,7 +21,7 @@ class GooglePlaceAutoCompleteTextField extends StatefulWidget {
     this.onTap,
     this.onChanged,
     Key? key,
-  });
+  }) : super(key: key);
 
   final TextEditingController textEditingController;
   final InputDecoration inputDecoration;
