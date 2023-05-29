@@ -7,7 +7,7 @@ import 'package:google_places_flutter/model/prediction.dart';
 import 'package:rxdart/rxdart.dart';
 
 typedef GoogleMapTextFieldBuilder = Widget Function(
-  VoidCallback removeOverlay,
+  VoidCallback removeOverlayEntry,
   Widget child,
 );
 
@@ -69,7 +69,10 @@ class _GooglePlaceAutoCompleteTextFieldState
   @override
   Widget build(BuildContext context) {
     return widget.builder(
-      () => removeOverlay(),
+      () {
+        _overlayEntry?.remove();
+        _overlayEntry = null;
+      },
       CompositedTransformTarget(
         link: _layerLink,
         child: TextFormField(
